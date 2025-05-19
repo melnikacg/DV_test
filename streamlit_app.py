@@ -18,7 +18,7 @@ st.markdown("""
 # Load your cleaned data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("movies_full_cleaned.csv")  # Replace with your final dataset path
+    df = pd.read_csv("https://raw.githubusercontent.com/melnikacg/DV_test_del/refs/heads/main/movies_full_cleaned.csv")  # Replace with your final dataset path
     return df
 
 movies_full = load_data()
