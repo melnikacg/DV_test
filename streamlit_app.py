@@ -23,6 +23,12 @@ def load_data():
 
 movies_full = load_data()
 
+
+# Create 'main_genre' if it's missing
+if 'main_genre' not in movies_full.columns:
+    movies_full['main_genre'] = movies_full['genres'].apply(lambda x: x.split('|')[0] if pd.notnull(x) else 'Unknown')
+
+
 # Sidebar filters
 st.sidebar.header("🔧 Filters")
 selected_genre = st.sidebar.selectbox("Choose a genre:", options=sorted(movies_full['main_genre'].unique()))
