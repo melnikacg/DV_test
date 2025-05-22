@@ -51,19 +51,34 @@ top_movies = filtered_movies.sort_values(by='avg_rating', ascending=False).head(
 st.dataframe(top_movies[['title', 'avg_rating', 'rating_count']])
 
 # -----------------------------
-# Optional: Rating Distribution
+# Two Side-by-Side Graphs
 # -----------------------------
-st.markdown("### 🎯 Rating Distribution for Selected Genre")
+st.markdown("### 📊 Genre-Based Insights")
 
-fig = px.histogram(
-    filtered_movies,
-    x="avg_rating",
-    nbins=20,
-    title=f"Distribution of Ratings in '{selected_genre}' Movies",
-    labels={"avg_rating": "Average Rating"},
-    color_discrete_sequence=["#4CAF50"]
-)
-st.plotly_chart(fig, use_container_width=True)
+col1, col2 = st.columns(2)
+
+with col1:
+    fig_hist = px.histogram(
+        filtered_movies,
+        x="avg_rating",
+        nbins=20,
+        title=f"Distribution of Ratings in '{selected_genre}' Movies",
+        labels={"avg_rating": "Average Rating"},
+        color_discrete_sequence=["#4CAF50"]
+    )
+    st.plotly_chart(fig_hist, use_container_width=True)
+
+with col2:
+    fig_scatter = px.scatter(
+        filtered_movies,
+        x="rating_count",
+        y="avg_rating",
+        title=f"Rating Count vs Avg Rating in '{selected_genre}'",
+        labels={"rating_count": "Number of Ratings", "avg_rating": "Average Rating"},
+        color_discrete_sequence=["#2196F3"],
+        size_max=60
+    )
+    st.plotly_chart(fig_scatter, use_container_width=True)
 
 # -----------------------------
 # Footer
