@@ -10,66 +10,50 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="🎬 Movie Explorer Dashboard", layout="wide")
 
 # -----------------------------
-# Title and Intro
-# -----------------------------
-st.markdown("""
-    <h1 style='text-align: center; color: #4CAF50;'>🎬 Movie Explorer Dashboard</h1>
-    <p style='text-align: center;'>Explore your favorite genres and discover top-rated movies 🔍🍿</p>
-""", unsafe_allow_html=True)
-
-# -----------------------------
-# Data Loading
+# Load the cleaned movie data
 # -----------------------------
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/melnikacg/DV_test_del/main/movies_full_cleaned.csv"
+    url = "https://raw.githubusercontent.com/melnikacg/DV_test_del/main/movies_full_cleaned_2.csv"
     df = pd.read_csv(url)
 
-    # Create main_genre if missing
-    if 'main_genre' not in df.columns:
-        df['main_genre'] = df['genres'].apply(lambda x: x.split('|')[0] if pd.notnull(x) else 'Unknown')
-
+    # Explode genres into individual rows for filtering
+    df['genres'] = df['genres'].fillna('')
+    df['genre_list'] = df['genres'].apply(lambda x: x.split('|') if x else [])
     return df
 
-movies_full = load_data()
+movies = load_data()
 
 # -----------------------------
-# Sidebar Filters
+# Unique genres for dropdown
 # -----------------------------
-st.sidebar.header("🔧 Filters")
-selected_genre = st.sidebar.selectbox(
-    "Choose a genre:",
-    options=sorted(movies_full['main_genre'].unique())
-)
+all_genres = sorted({genre for sublist in movies['genre_list'] for genre in sublist if genre})
+selected_genre = st.sidebar.selectbox("🎞️ Select a genre", options=all_genres)
+
+# -----------------------------
+# Filter movies by selected genre
+# -----------------------------
+filtered_movies = movies[movies['genre_list'].apply(lambda genres: selected_genre in genres)]
 
 top_n = st.sidebar.slider("🎬 How many top movies to show?", 5, 20, 5)
-
-# -----------------------------
-# Top-Rated Movies by Genre
-# -----------------------------
-st.subheader(f"⭐ Top-Rated '{selected_genre}' Movies")
-
-filtered_movies = movies_full[movies_full['main_genre'] == selected_genre]
 top_movies = filtered_movies.sort_values(by='avg_rating', ascending=False).head(top_n)
 
-# Select and rename columns for display
-display_table = top_movies[['title', 'avg_rating', 'rating_count']].copy()
-display_table.columns = ['Movie Title', 'Average Rating', 'Number of Ratings']
-
-# Add numbered index
-display_table = display_table.reset_index(drop=True)
-#display_table.insert(0, 'No.', display_table.index)
-
-st.dataframe(display_table, use_container_width=True)
+# -----------------------------
+# Display Top-Rated Table
+# -----------------------------
+st.subheader(f"⭐ Top-Rated Movies in Genre: {selected_genre}")
+table = top_movies[['title', 'avg_rating', 'rating_count']].copy()
+table.columns = ['Movie Title', 'Average Rating', 'Number of Ratings']
+st.dataframe(table.reset_index(drop=True), use_container_width=True)
 
 # -----------------------------
-# --- Dual Column Layout
+# Dual Column Layout
 # -----------------------------
 col1, col2 = st.columns(2)
 
-# --- Histogram of Ratings
+# --- Rating Histogram
 with col1:
-    st.markdown("### 🎯 Rating Distribution in This Genre")
+    st.markdown("### 🎯 Rating Distribution")
     fig = px.histogram(
         filtered_movies,
         x="avg_rating",
@@ -82,10 +66,8 @@ with col1:
 
 # --- Word Cloud of Tags
 with col2:
-    st.markdown("### ☁️ Common Tags in This Genre")
-
+    st.markdown("### ☁️ Common Tags")
     tags_text = ' '.join(filtered_movies['all_tags'].dropna().astype(str).tolist())
-
     wordcloud = WordCloud(
         width=600,
         height=400,
@@ -93,7 +75,6 @@ with col2:
         colormap='Greens',
         max_words=100
     ).generate(tags_text)
-
     fig_wc, ax = plt.subplots(figsize=(6, 4))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
