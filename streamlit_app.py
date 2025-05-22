@@ -68,6 +68,7 @@ with col1:
         labels={"avg_rating": "Average Rating"},
         color_discrete_sequence=["#4CAF50"]
     )
+    fig.update_layout(height=400)  # Add this line for vertical consistency
     st.plotly_chart(fig, use_container_width=True)
 
 # --- Word Cloud of Tags
