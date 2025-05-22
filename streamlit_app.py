@@ -60,7 +60,7 @@ col1, col2 = st.columns(2)
 
 # --- Histogram of Ratings
 with col1:
-    st.markdown("### 🎯 Rating Distribution")
+    st.markdown("### 🎯 Rating Distribution in This Genre")
     fig = px.histogram(
         filtered_movies,
         x="avg_rating",
