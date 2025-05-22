@@ -10,7 +10,7 @@ st.set_page_config(page_title="🎬 Movie Explorer Dashboard", layout="wide")
 # Load the cleaned movie data
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/melnikacg/DV_test_del/main/movies_full_cleaned.csv"
+    url = "https://raw.githubusercontent.com/melnikacg/DV_test/main/movies_full_cleaned.csv"
     df = pd.read_csv(url)
 
     # Explode genres into individual rows for filtering
