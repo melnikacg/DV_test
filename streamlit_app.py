@@ -25,9 +25,10 @@ def load_data():
     url = "https://raw.githubusercontent.com/melnikacg/DV_test_del/main/movies_full_cleaned.csv"
     df = pd.read_csv(url)
 
+    # Create main_genre if missing
     if 'main_genre' not in df.columns:
         df['main_genre'] = df['genres'].apply(lambda x: x.split('|')[0] if pd.notnull(x) else 'Unknown')
-    
+
     return df
 
 movies_full = load_data()
@@ -51,14 +52,15 @@ st.subheader(f"⭐ Top-Rated '{selected_genre}' Movies")
 filtered_movies = movies_full[movies_full['main_genre'] == selected_genre]
 top_movies = filtered_movies.sort_values(by='avg_rating', ascending=False).head(top_n)
 
-# Rename columns for display
-display_table = top_movies[['title', 'avg_rating', 'rating_count']].rename(columns={
-    'title': 'Movie Title',
-    'avg_rating': 'Average Rating',
-    'rating_count': 'Number of Ratings'
-})
+# Select and rename columns for display
+display_table = top_movies[['title', 'avg_rating', 'rating_count']].copy()
+display_table.columns = ['Movie Title', 'Average Rating', 'Number of Ratings']
 
-st.dataframe(display_table)
+# Add numbered index
+display_table = display_table.reset_index(drop=True)
+display_table.insert(0, 'No.', display_table.index)
+
+st.dataframe(display_table, use_container_width=True)
 
 # -----------------------------
 # --- Dual Column Layout
