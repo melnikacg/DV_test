@@ -87,9 +87,10 @@ with col2:
 
     fig_wc, ax = plt.subplots(figsize=(6, 4))
     ax.imshow(wordcloud, interpolation='bilinear')
+    ax.set_title(f"Tag Cloud for '{selected_genre}' Movies", fontsize=12, color='darkgreen', pad=10)
     ax.axis('off')
     st.pyplot(fig_wc)
-    
+
 # -----------------------------
 # Footer
 # -----------------------------
