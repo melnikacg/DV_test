@@ -24,7 +24,7 @@ st.markdown("""
 def load_data():
     url = "https://raw.githubusercontent.com/melnikacg/DV_test_del/main/movies_full_cleaned.csv"
     df = pd.read_csv(url)
-    
+
     if 'main_genre' not in df.columns:
         df['main_genre'] = df['genres'].apply(lambda x: x.split('|')[0] if pd.notnull(x) else 'Unknown')
     
@@ -51,7 +51,14 @@ st.subheader(f"⭐ Top-Rated '{selected_genre}' Movies")
 filtered_movies = movies_full[movies_full['main_genre'] == selected_genre]
 top_movies = filtered_movies.sort_values(by='avg_rating', ascending=False).head(top_n)
 
-st.dataframe(top_movies[['title', 'avg_rating', 'rating_count']])
+# Rename columns for display
+display_table = top_movies[['title', 'avg_rating', 'rating_count']].rename(columns={
+    'title': 'Movie Title',
+    'avg_rating': 'Average Rating',
+    'rating_count': 'Number of Ratings'
+})
+
+st.dataframe(display_table)
 
 # -----------------------------
 # --- Dual Column Layout
@@ -65,7 +72,6 @@ with col1:
         filtered_movies,
         x="avg_rating",
         nbins=20,
-        #title=f"Distribution of Ratings in '{selected_genre}' Movies",
         labels={"avg_rating": "Average Rating"},
         color_discrete_sequence=["#4CAF50"]
     )
@@ -88,7 +94,6 @@ with col2:
 
     fig_wc, ax = plt.subplots(figsize=(6, 4))
     ax.imshow(wordcloud, interpolation='bilinear')
-    #ax.set_title(f"Tag Cloud for '{selected_genre}' Movies", fontsize=12, color='black', fontweight='bold', pad=10)
     ax.axis('off')
     st.pyplot(fig_wc)
 
