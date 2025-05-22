@@ -58,7 +58,7 @@ display_table.columns = ['Movie Title', 'Average Rating', 'Number of Ratings']
 
 # Add numbered index
 display_table = display_table.reset_index(drop=True)
-display_table.insert(0, 'No.', display_table.index)
+#display_table.insert(0, 'No.', display_table.index)
 
 st.dataframe(display_table, use_container_width=True)
 
