@@ -68,33 +68,28 @@ with col1:
         labels={"avg_rating": "Average Rating"},
         color_discrete_sequence=["#4CAF50"]
     )
-    # Set height and margins to match visual proportions
-    fig.update_layout(
-        height=500,
-        margin=dict(t=50, b=50)
-    )
+    fig.update_layout(height=400)  # Add this line for vertical consistency
     st.plotly_chart(fig, use_container_width=True)
 
 # --- Word Cloud of Tags
 with col2:
     st.markdown("### ☁️ Common Tags in This Genre")
-    
+
     tags_text = ' '.join(filtered_movies['all_tags'].dropna().astype(str).tolist())
 
     wordcloud = WordCloud(
-        width=800,      # Wider to match column width
-        height=500,     # Match height with Plotly chart
+        width=600,
+        height=400,
         background_color='white',
         colormap='Greens',
         max_words=100
     ).generate(tags_text)
 
-    fig_wc, ax = plt.subplots(figsize=(8, 5))  # Match ~800x500 pixels
+    fig_wc, ax = plt.subplots(figsize=(6, 4))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
-    plt.tight_layout(pad=0)  # Remove padding
     st.pyplot(fig_wc)
-
+    
 # -----------------------------
 # Footer
 # -----------------------------
