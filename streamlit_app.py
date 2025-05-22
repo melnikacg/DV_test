@@ -41,11 +41,12 @@ selected_genre = st.sidebar.selectbox(
     options=sorted(movies_full['main_genre'].unique())
 )
 
+top_n = st.sidebar.slider("🎬 How many top movies to show?", 5, 20, 5)
+
 # -----------------------------
 # Top-Rated Movies by Genre
 # -----------------------------
 st.subheader(f"⭐ Top-Rated '{selected_genre}' Movies")
-top_n = st.slider("How many top movies to show?", 5, 20, 10)
 
 filtered_movies = movies_full[movies_full['main_genre'] == selected_genre]
 top_movies = filtered_movies.sort_values(by='avg_rating', ascending=False).head(top_n)
@@ -68,7 +69,7 @@ with col1:
         labels={"avg_rating": "Average Rating"},
         color_discrete_sequence=["#4CAF50"]
     )
-    fig.update_layout(height=400)  # Add this line for vertical consistency
+    fig.update_layout(height=400)
     st.plotly_chart(fig, use_container_width=True)
 
 # --- Word Cloud of Tags
@@ -87,7 +88,7 @@ with col2:
 
     fig_wc, ax = plt.subplots(figsize=(6, 4))
     ax.imshow(wordcloud, interpolation='bilinear')
-    ax.set_title(f"Tag Cloud for '{selected_genre}' Movies", fontsize=10, color='black', fontweight='bold', pad=10)
+    ax.set_title(f"Tag Cloud for '{selected_genre}' Movies", fontsize=12, color='black', fontweight='bold', pad=10)
     ax.axis('off')
     st.pyplot(fig_wc)
 
