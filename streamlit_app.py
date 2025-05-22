@@ -65,7 +65,7 @@ with col1:
         filtered_movies,
         x="avg_rating",
         nbins=20,
-        title=f"Distribution of Ratings in '{selected_genre}' Movies",
+        #title=f"Distribution of Ratings in '{selected_genre}' Movies",
         labels={"avg_rating": "Average Rating"},
         color_discrete_sequence=["#4CAF50"]
     )
@@ -88,7 +88,7 @@ with col2:
 
     fig_wc, ax = plt.subplots(figsize=(6, 4))
     ax.imshow(wordcloud, interpolation='bilinear')
-    ax.set_title(f"Tag Cloud for '{selected_genre}' Movies", fontsize=12, color='black', fontweight='bold', pad=10)
+    #ax.set_title(f"Tag Cloud for '{selected_genre}' Movies", fontsize=12, color='black', fontweight='bold', pad=10)
     ax.axis('off')
     st.pyplot(fig_wc)
 
