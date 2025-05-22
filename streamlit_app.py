@@ -1,8 +1,12 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
+# -----------------------------
 # Page configuration
+# -----------------------------
 st.set_page_config(page_title="🎬 Movie Explorer Dashboard", layout="wide")
 
 # -----------------------------
@@ -21,7 +25,6 @@ def load_data():
     url = "https://raw.githubusercontent.com/melnikacg/DV_test_del/main/movies_full_cleaned.csv"
     df = pd.read_csv(url)
     
-    # Ensure main_genre is defined
     if 'main_genre' not in df.columns:
         df['main_genre'] = df['genres'].apply(lambda x: x.split('|')[0] if pd.notnull(x) else 'Unknown')
     
@@ -44,21 +47,20 @@ selected_genre = st.sidebar.selectbox(
 st.subheader(f"⭐ Top-Rated '{selected_genre}' Movies")
 top_n = st.slider("How many top movies to show?", 5, 20, 10)
 
-# Filter and sort movies
 filtered_movies = movies_full[movies_full['main_genre'] == selected_genre]
 top_movies = filtered_movies.sort_values(by='avg_rating', ascending=False).head(top_n)
 
 st.dataframe(top_movies[['title', 'avg_rating', 'rating_count']])
 
 # -----------------------------
-# Two Side-by-Side Graphs
+# Dual Chart Section
 # -----------------------------
-st.markdown("### 📊 Genre-Based Insights")
-
 col1, col2 = st.columns(2)
 
+# --- Histogram of Ratings
 with col1:
-    fig_hist = px.histogram(
+    st.markdown("### 🎯 Rating Distribution")
+    fig = px.histogram(
         filtered_movies,
         x="avg_rating",
         nbins=20,
@@ -66,19 +68,29 @@ with col1:
         labels={"avg_rating": "Average Rating"},
         color_discrete_sequence=["#4CAF50"]
     )
-    st.plotly_chart(fig_hist, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
+# --- Word Cloud of Tags
 with col2:
-    fig_scatter = px.scatter(
-        filtered_movies,
-        x="rating_count",
-        y="avg_rating",
-        title=f"Rating Count vs Avg Rating in '{selected_genre}'",
-        labels={"rating_count": "Number of Ratings", "avg_rating": "Average Rating"},
-        color_discrete_sequence=["#2196F3"],
-        size_max=60
-    )
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.markdown("### ☁️ Common Tags in This Genre")
+
+    tags_text = ' '.join(filtered_movies['all_tags'].dropna().astype(str).tolist())
+
+    if tags_text.strip():
+        wordcloud = WordCloud(
+            width=600,
+            height=400,
+            background_color='white',
+            colormap='Greens',
+            max_words=100
+        ).generate(tags_text)
+
+        fig_wc, ax = plt.subplots(figsize=(6, 4))
+        ax.imshow(wordcloud, interpolation='bilinear')
+        ax.axis('off')
+        st.pyplot(fig_wc)
+    else:
+        st.info("No tags available for this genre.")
 
 # -----------------------------
 # Footer
